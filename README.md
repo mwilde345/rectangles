@@ -8,7 +8,13 @@ https://nuvalence-development-exercises.s3.amazonaws.com/rectangles/Rectangles+P
   * adjacent lines of 1s could be a rectangle with no center... a line
 * list of rectangle objects
 * csv with each line being a rectangle
+* each file has results in its own graph
 * inputs that would require scale and cloud resources?
+  * listen to file changes and update respective graph
+  * listen to new file uploads and add to same graph if they relate (sqs)
+* host graph database and provide access to upload and query data via website
+  
+  
 
 ## Requirements
 * Rectangle object needs only 3 points as parameters
