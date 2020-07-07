@@ -6,6 +6,9 @@ https://nuvalence-development-exercises.s3.amazonaws.com/rectangles/Rectangles+P
 * picture
   * Only need outermost pixels of a rectangle, single line of 1s
   * adjacent lines of 1s could be a rectangle with no center... a line
+  * skyscraper with multiple stores taking up a whole level. Can't layer rectangles. Some sort of notation?
+  * so each rectangle would have a z-axis parameter and you would only compare rectangles on the same z-axis.
+  * space for new building or structure? pass it into the program yo.
 * list of rectangle objects
 * csv with each line being a rectangle
 * each file has results in its own graph
