@@ -9,7 +9,9 @@ https://nuvalence-development-exercises.s3.amazonaws.com/rectangles/Rectangles+P
   * skyscraper with multiple stores taking up a whole level. Can't layer rectangles. Some sort of notation?
   * so each rectangle would have a z-axis parameter and you would only compare rectangles on the same z-axis.
   * space for new building or structure? pass it into the program yo.
-    * provide data for selling costs of real estate based off how well a structure will fit into a spot. Search real-estate based on desired dimensions or sell it based of available dimensions. sell an alleyway lul
+    * provide data for selling costs of real estate based off how well a structure will fit into a spot. Search real-estate based on desired dimensions or sell it based of available dimensions. sell an alleyway lul. register your front-room or basement as being available for a business, list by  dimension.
+  * intersection data could be used for pipelines? given width of pipe, start, end (given it is straight).
+  * containment and adjacency used for buildings.
 * list of rectangle objects
 * csv with each line being a rectangle
 * each file has results in its own graph
