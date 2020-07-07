@@ -1,5 +1,7 @@
 # rectangles
 
+https://nuvalence-development-exercises.s3.amazonaws.com/rectangles/Rectangles+Programming+Sample.pdf
+
 ## Input
 * picture
   * Only need outermost pixels of a rectangle, single line of 1s
