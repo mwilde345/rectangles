@@ -12,17 +12,24 @@ export class Line {
         return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)
     }
 
-    getAngle() {
+    // getAngle() {
+    //     let a = this.start;
+    //     let b = this.end;
+    //     //arctangent (stackoverflow)
+    //     var dy = a.y - b.y;
+    //     var dx = a.x - b.x;
+    //     var theta = Math.atan2(dy, dx);
+    //     theta *= 180 / Math.PI;
+    //     return theta;
+    //     // 0,0 and -1, 1 is 135
+    //     // 0,0 and 1,-1 is -45
+    // }
+
+    
+    getSlope() {
         let a = this.start;
         let b = this.end;
-        //arctangent (stackoverflow)
-        var dy = a.y - b.y;
-        var dx = a.x - b.x;
-        var theta = Math.atan2(dy, dx);
-        theta *= 180 / Math.PI;
-        return theta;
-        // 0,0 and -1, 1 is 135
-        // 0,0 and 1,-1 is -45
+        return (b.y - a.y) / (b.x - a.x) * 1.0
     }
 
     set start(start) {
