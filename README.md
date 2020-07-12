@@ -74,3 +74,31 @@ https://nuvalence-development-exercises.s3.amazonaws.com/rectangles/Rectangles+P
 {type: CONTAIN} // no data needed. rec1 contains rec2
 ]
 ```
+
+### Update
+Why not just have the results be an adjacency matrix (object) with the index being a Relationship object
+[Rec1][Rec2] = {
+  Adjacency = {
+
+  },
+  Containment = {
+
+  },
+  Intersection = {
+
+  }
+}
+
+### questions
+#### how to initialize a rectangle?
+given points, how do you know which connect where?
+given lines, we know start and end
+so given 4 points, i need logic to create a rectangle using 4 lines.
+* start with one point, find another point with the same x coord, line to it
+* from the next coord, find one with the same y, line to it
+* from the 3rd, find with same x, line to it.
+so create 2 lines right off the bat between pairs with same x
+then create 2 between pairs with same y
+
+#### what about a diagonal rectangle?
+
