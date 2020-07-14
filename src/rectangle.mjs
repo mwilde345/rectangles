@@ -1,35 +1,35 @@
-import { Line } from './line';
-const Helpers = require('helpers');
+import { Line } from './line.mjs';
+import { Helpers } from './helpers.mjs'
 export class Rectangle {
     // a collection of lines
     constructor(p1, p2, p3, p4) {
-        this.p1 = p1;
-        this.p2 = p2;
-        this.p3 = p3;
-        this.p4 = p4;
+        this._p1 = p1;
+        this._p2 = p2;
+        this._p3 = p3;
+        this._p4 = p4;
         // {points: {start: p, end: p}, length: n}
-        this.diagonal = null
+        this._diagonal = null
         // length of short + long side
-        this.halfPerimeter = null
+        this._halfPerimeter = null
         // area of rectangle
-        this.area = null
+        this._area = null
         // map of point names to point objects
-        this.points = null
+        this._points = null
         // map of line names to line objects
-        this.lines = null
+        this._lines = null
         // [slope1, slope2]. slopes of short and long lines
-        this.slopes = null
+        this._slopes = null
         // boolean 
-        this.isRectangle = null
+        this._isRectangle = null
         this.init();
     }
 
     init() {
         // set isRectangle and set this.diagonal
         this.checkRectangle();
-        if (this.isRectangle) {
-            // set this.points
-            this.generatePoints();
+        // set this.points
+        this.generatePoints();
+        if (this._isRectangle) {
             // set this.lines
             this.generateLines();
             // set this.halfPerimeter and this.area and this.slopes
@@ -38,71 +38,84 @@ export class Rectangle {
     }
 
     get diagonal() {
-        return this.diagonal;
+        return this._diagonal;
     }
 
     get halfPerimeter() {
-        return this.halfPerimeter;
+        return this._halfPerimeter;
     }
 
     get area() {
-        return this.area;
+        return this._area;
     }
 
     get lines() {
-        return this.lines;
+        return this._lines;
     }
 
     get points() {
-        return this.points;
+        return this._points;
+    }
+
+    get isRectangle() {
+        return this._isRectangle;
+    }
+
+    get slopes() {
+        return this._slopes;
     }
 
     generatePoints() {
-        this.points = {
-            [this.p1.toString()]: this.p1,
-            [this.p2.toString()]: this.p2,
-            [this.p3.toString()]: this.p3,
-            [this.p4.toString()]: this.p4
+        this._points = {
+            [this._p1.toString()]: this._p1,
+            [this._p2.toString()]: this._p2,
+            [this._p3.toString()]: this._p3,
+            [this._p4.toString()]: this._p4
         }
     }
 
     generateLines() {
         // return {'2_1-3_2': <Line>, ...}
         // line between 2,1 and 3,2
-        let points = [this.p1, this.p2, this.p3, this.p4];
-        let maxLength = this.diagonal.length;
+        let points = [this._p1, this._p2, this._p3, this._p4];
+        let maxLength = this._diagonal.length;
         // create lines between points that are not of length diagonal
         let lines = {}
-        for (i = 0; i < points.length - 1; i++) {
-            for (j = i + 1; j < points.length; j++) {
+        for (let i = 0; i < points.length - 1; i++) {
+            for (let j = i + 1; j < points.length; j++) {
                 if (Helpers.pointDistance(points[i], points[j]) < maxLength) {
                     let line = new Line(points[i], points[j]);
                     lines[line.toString()] = line;
                 }
             }
         }
-        this.lines = lines;
+        this._lines = lines;
     }
 
     calculateHalfPerimeterAndAreaAndSlopes() {
         let [line1, line2] = this.getUniqueLines();
-        this.halfPerimeter = line1.length + line2.length;
-        this.area = line1.length * line2.length;
-        this.slopes = [line1.slope, line2.slope];
+        this._halfPerimeter = line1.length + line2.length;
+        this._area = line1.length * line2.length;
+        this._slopes = [line1.slope, line2.slope];
     }
 
     getUniqueLines() {
         // returns the two lines of different lengths
-        let lines = Object.values(this.lines);
+        let lines = Object.values(this._lines);
         let line1 = lines[0];
-        let line2 = this.getLines().filter(l => {
-            l.length != line1.length
+        let line2 = lines.filter(l => {
+            return l.length != line1.length
         })[0] || line1; // if a square
         return [line1, line2]
+    }
+    toString() {
+        return Object.keys(this._points).join('-')
     }
 
     checkRectangle() {
         let result = true;
+        let points = [this._p1, this._p2, this._p3, this._p4];
+        let [p1, p2, p3, p4] = points;
         // if we knew all input were rectangles, then only need 3 points
         if (!p1 || !p2 || !p3 || !p4) {
             result = false;
@@ -111,18 +124,17 @@ export class Rectangle {
         if (new Set([p1.toString(), p2.toString(), p3.toString(), p4.toString()]).size !== 4) {
             result = false;
         }
-        let points = [this.p1, this.p2, this.p3, this.p4];
         let lineLengths = [];
         // any two points that form a diagonal (use for containment)
-        let maxPoints = { 'start': points[0], 'end': points[1] }
+        let maxPoints = [p1, p2]
         // get the diagonal length first
         // technically we only need to scan three points to get the diagonal
-        for (i = 0; i < points.length - 1; i++) {
-            for (j = i + 1; j < points.length; j++) {
+        for (let i = 0; i < points.length - 1; i++) {
+            for (let j = i + 1; j < points.length; j++) {
                 let newLength = Helpers.pointDistance(points[i], points[j])
                 lineLengths.push(newLength);
                 if (newLength >= Math.max(...lineLengths)) {
-                    maxPoints = { 'start': points[i], 'end': points[j] }
+                    maxPoints = [points[i], points[j]]
                 }
             }
         }
@@ -130,10 +142,10 @@ export class Rectangle {
         if (new Set(lineLengths).size > 3) {
             result = false;
         }
-        this.diagonal = {
+        this._diagonal = {
             length: Math.max(...lineLengths),
             points: maxPoints
         }
-        this.isRectangle = result;
+        this._isRectangle = result;
     }
 }

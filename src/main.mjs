@@ -1,16 +1,16 @@
-import { Point } from './point'
-import { Line } from './line'
-import { Rectangle } from './rectangle'
-import { Helpers } from './helpers'
-import { Relationship } from './relationship'
-import { Result } from './result'
-import { Adjacency } from './adjacency'
-import { Containment } from './containment'
-import { Intersection } from './intersection'
+import { Point } from './point.mjs'
+import { Line } from './line.mjs'
+import { Rectangle } from './rectangle.mjs'
+import { Helpers } from './helpers.mjs'
+import { Relationship } from './relationship.mjs'
+import { Result } from './result.mjs'
+import { Adjacency } from './adjacency.mjs'
+import { Containment } from './containment.mjs'
+import { Intersection } from './intersection.mjs'
 
 class Main {
     constructor(input) {
-        this.result = new Result();
+        this._result = new Result();
         this.analyze(input)
     }
     // O(N^2)
@@ -21,7 +21,7 @@ class Main {
         input.forEach((line, index) => {
             if (line.length < 4) {
                 console.log(`line ${index} must have 4 points. Skipping`);
-                continue;
+                return;
             }
             let rect = new Rectangle(
                 new Point(line[0][0], line[0][1]),
@@ -29,22 +29,22 @@ class Main {
                 new Point(line[2][0], line[2][1]),
                 new Point(line[3][0], line[3][1])
             )
-            let { isRectangle, diagonal, halfPerimeter, area, points, lines, slopes } = rect;
+            let isRectangle = rect.isRectangle;
             if (!isRectangle) {
                 console.log(`line ${index} contains an invalid rectangle. Skipping`);
-                metadata[rect.toString] = {
+                metadata[rect.toString()] = {
                     isRectangle
                 }
-                continue;
+                return;
             } else metadata[rect.toString()] = rect;
         })
         let rectArray = Object.values(metadata);
+        if (rectArray.length < 2) {
+            console.log(`Only ${rectArray.length} valid rectangle(s) exist. Not enough to compare!`)
+        }
         // compare each rectangle against every other
         for (let i = 0; i < rectArray.length - 1; i++) {
             let r1 = rectArray[i];
-            if (!r1.isRectangle) {
-                console.log()
-            }
             for (let j = i + 1; j < rectArray.length; j++) {
                 let r2 = rectArray[j];
                 if (r1.toString() === r2.toString()) {
@@ -65,10 +65,11 @@ class Main {
                 if (slopes2.includes(slopes1[0])) {
                     relationship.adjacency = this.checkAdjacent(r1, r2)
                 }
-                this.result[r1.toString()][r2.toString()] = relationship;
+                this._result.addRelationship(r1.toString(),r2.toString(),relationship);
             }
         }
-        return this.result;
+        console.log(JSON.stringify(this._result));
+        return this._result;
     }
     // O(16) 4x4 lines
     // what are the intersecting points between the two rectangles?
@@ -92,21 +93,34 @@ class Main {
         return intersectingPoints.length ? new Intersection(intersectingPoints) : null;
 
     }
-    // O(4) only check one daig in r1 against all points in r2
-    // true if r1 contains r2 (false if rectangles are passed in opposite order)
+    // O(8) only check one daig in r1 against all points in r2 and vice versa
     checkContains(r1, r2) {
         // can be adjacent and contained
         // can't be intersecting and contained
         // For every point 'p' on r2, ensure that ap + pc < ab + bc where a,b,c are top left, right, bottom right of r1
-        let { diagonal, halfPerimeter } = r1;
-        let [a, c] = diagonal.points;
-        let points = Object.values(r2.points);
-        return new Containment(
-            points.filter(p => {
-                Helpers.pointDistance(a, p) + Helpers.pointDistance(p, c) <= halfPerimeter
-            })
-                .length === 4
-        )
+        //  and vice versa
+        let containment = true;
+        let parent = r1.toString();
+        let child = r2.toString();
+        let [diagonal1, halfPerimeter1, diagonal2, halfPerimeter2] = 
+            [r1.diagonal, r1.halfPerimeter, r2.diagonal, r2.halfPerimeter];
+        let [a1, c1, a2, c2] = [...diagonal1.points, ...diagonal2.points];
+        let pointsFor1 = Object.values(r2.points);
+        let pointsFor2 = Object.values(r1.points);
+        let r1ContainsR2 = pointsFor1.filter(p => {
+            return Helpers.pointDistance(a1, p) + Helpers.pointDistance(p, c1) <= halfPerimeter1
+        }).length === 4
+        let r2ContainsR1 = pointsFor2.filter(p => {
+            return Helpers.pointDistance(a2, p) + Helpers.pointDistance(p, c2) <= halfPerimeter2
+        }).length === 4
+        if (!r1ContainsR2 && !r2ContainsR1){
+            containment = false;
+        }
+        if (r2ContainsR1) {
+            parent = r2.toString();
+            child = r1.toString();
+        }
+        return new Containment(containment, parent, child)
     }
 
     // sub: A sub-line share is a share where one side of rectangle A is a line that 
@@ -122,17 +136,17 @@ class Main {
         let r1lines = Object.values(r1.lines); // [l1,l2,l3,l4]
         let r2lines = Object.values(r2.lines);
         let relatedR2Lines = [];
-        for (i = 0; i < r1lines.length; i++){
+        for (let i = 0; i < r1lines.length; i++){
             let line1 = r1lines[i];
             inner_loop:
-            for (j = 0; j < r2lines.length; j++) {
+            for (let j = 0; j < r2lines.length; j++) {
                 // don't worry about a line that's already been related
                 if (relatedR2Lines.includes(j)) continue;
                 let line2 = r2lines[j];
                 // don't worry about lines that aren't parallel
                 if (line1.slope !== line2.slope) continue;
                 // if the lines share points, they are proper
-                let uniquePoints = new Set(...Object.keys(line1.points), ...Object.keys(line2.points))
+                let uniquePoints = new Set([...Object.keys(line1.points), ...Object.keys(line2.points)])
                 if (uniquePoints.size === 2) {
                     // add proper line
                     adjacency.addProper(line1)
@@ -183,4 +197,8 @@ class Main {
         return adjacency;
     }
 }
-new Main(input);
+new Main([
+    [[0,0],[1,0],[0,3],[1,3]],
+    [[0,0],[0.5,0],[0,2],[0.5,2]],
+    [[0,0],[0.5,0],[0,4],[0.5,4]],
+]);
