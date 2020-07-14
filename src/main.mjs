@@ -71,7 +71,7 @@ class Main {
         console.log(JSON.stringify(this._result));
         return this._result;
     }
-    // O(16) 4x4 lines
+    // O(8) 4x2 lines
     // what are the intersecting points between the two rectangles?
     checkIntersection(r1, r2) {
         // bonus: intersectionMemo. Which lines of which rectangles have discovered intersections
@@ -84,9 +84,8 @@ class Main {
         let intersectingPoints = []
         r1lines.forEach(r1line => {
             r2lines.forEach(r2line => {
-                if (r1.toString()==='0_0-1_0-0_3-1_3' && r2.toString() === '0_0-0.5_0-0_2-0.5_2') {
-                    console.log(r1line, r2line)
-                }
+                //skip parallel lines
+                if(r1line.slope === r2line.slope) return;
                 let intersectionPoint = Helpers.getIntersectionPoint(r1line, r2line);
                 if (intersectionPoint) {
                     intersectingPoints.push(intersectionPoint)

@@ -44,7 +44,12 @@ export class Helpers {
             yinter = (l1.slope * xinter) + y1int;
         }
         let intersection = new Point(xinter, yinter);
+        let isOnLine1 = this.isPointOnLine(intersection, l1);
+        let isOnLine2 = this.isPointOnLine(intersection, l2);
+        let linePoints = [...Object.keys(l1.points), ...Object.keys(l2.points)]
         // if the intersection is not on one of the lines, return null;
-        return (!this.isPointOnLine(intersection, l1)) ? null : intersection
+        // bonus: to count an intersection as a point of a rectangle coming at a diff angle onto a point in a line
+        // but not in an adjacent way, get the slopeSet of both lines' rectangles and add that check
+        return (!isOnLine1 || !isOnLine2 || linePoints.includes(intersection.toString())) ? null : intersection
     }
 }    

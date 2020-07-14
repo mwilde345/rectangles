@@ -52,18 +52,12 @@
                     "_proper": [],
                     "_partial": []
                 },
-                "_intersection": {
-                    "_points": [
-                        {
-                            "_x": 1,
-                            "_y": 2
-                        },
-                        {
-                            "_x": 0.5,
-                            "_y": 3
-                        }
-                    ]
-                }
+                "_containment": {
+                    "_contains": true,
+                    "_parent": "0_0-1_0-0_3-1_3",
+                    "_child": "0_0-0.5_0-0_2-0.5_2"
+                },
+                "_intersection": null
             },
             "0_0-0.5_0-0_4-0.5_4": {
                 "_adjacency": {
@@ -201,14 +195,12 @@
                     ],
                     "_partial": []
                 },
-                "_intersection": {
-                    "_points": [
-                        {
-                            "_x": 0.5,
-                            "_y": 2
-                        }
-                    ]
-                }
+                "_containment": {
+                    "_contains": true,
+                    "_parent": "0_0-0.5_0-0_4-0.5_4",
+                    "_child": "0_0-0.5_0-0_2-0.5_2"
+                },
+                "_intersection": null
             }
         }
     }
