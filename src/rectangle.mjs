@@ -74,6 +74,11 @@ export class Rectangle {
         }
     }
 
+    equals(r2) {
+        let uniquePoints = new Set([...Object.keys(this._points), ...Object.keys(r2.points)])
+        return uniquePoints.size === 4
+    }
+
     generateLines() {
         // return {'2_1-3_2': <Line>, ...}
         // line between 2,1 and 3,2

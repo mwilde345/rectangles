@@ -43,12 +43,16 @@ class Main {
             console.log(`Only ${rectArray.length} valid rectangle(s) exist. Not enough to compare!`)
         }
         // compare each rectangle against every other
+        let skippedIndexes = []
         for (let i = 0; i < rectArray.length - 1; i++) {
             let r1 = rectArray[i];
             for (let j = i + 1; j < rectArray.length; j++) {
+                if (skippedIndexes.includes(j)) continue;
                 let r2 = rectArray[j];
-                if (r1.toString() === r2.toString()) {
+                // TODO: fix check
+                if (r1.equals(r2)) {
                     console.log(`Found two identical rectangles at: ${r1.toString()}. Skipping.`);
+                    skippedIndexes.push(j);
                     continue;
                 }
                 let relationship = new Relationship();
@@ -203,4 +207,10 @@ new Main([
     [[0,0],[1,0],[0,3],[1,3]],
     [[0,0],[0.5,0],[0,2],[0.5,2]],
     [[0,0],[0.5,0],[0,4],[0.5,4]],
+    [[0,3],[1,3],[0,0],[1,0]]
 ]);
+// tests
+// diagonal rectangles
+// rectangles in negative quadrants
+// lines with <4 points
+// duplicate rectangles
