@@ -10,12 +10,59 @@ import {Intersection} from './intersection'
 
 class Main {
     constructor(input) {
+        this.result = new Result();
         this.analyze(input)
     }
     analyze(input) {
-
+        // first pass collects data about each rectangle
+        let metadata = {}
+        // if the input is a set of points, init each rectangle with 4 points
+        input.forEach((line, index) => {
+            if (line.length < 4) {
+                console.log(`line ${index} must have 4 points. Skipping`);
+                continue;
+            }
+            let rect = new Rectangle(
+                new Point(line[0][0], line[0][1]),
+                new Point(line[1][0], line[1][1]),
+                new Point(line[2][0], line[2][1]),
+                new Point(line[3][0], line[3][1])
+            )
+            let {isRectangle, diagonal, halfPerimeter, area, points, lines, slopes} = rect;
+            if (!isRectangle) {
+                console.log(`line ${index} contains an invalid rectangle. Skipping`);
+                metadata[rect.toString] = {
+                    isRectangle
+                }
+                continue;
+            } else metadata[rect.toString()] = rect;
+        })
+        let rectArray = Object.values(metadata);
+        // compare each rectangle against every other
+        for (let i = 0; i < rectArray.length - 1; i ++) {
+            let r1 = rectArray[i];
+            if (!r1.isRectangle) {
+                console.log()
+            }
+            for (let j = i + 1; j < rectArray.length; j++) {
+                let r2 = rectArray[j];
+                if (r1.toString()===r2.toString()) {
+                    console.log(`Found two identical rectangles at: ${r1.toString()}. Skipping.`);
+                    continue;
+                }
+                let relationship = new Relationship();
+                
+                // start checking relationships
+                relationship.intersection = this.checkIntersection(r1, r2);
+                if (!relationship.intersection) {
+                    relationship.containment = this.checkContains(r1, r2);
+                }
+                relationship.adjacency = this.checkAdjacent(r1, r2)
+                this.result[r1.toString()][r2.toString()] = relationship;
+            }
+        }
+        return this.result;
     }
-    // first check they are rectangles
     // sub: A sub-line share is a share where one side of rectangle A is a line that 
     //      exists as a set of points wholly contained on some other side of rectangle B
     // partial: where some line segment on a side of rectangle A exists as a set of points on some side of Rectangle B
