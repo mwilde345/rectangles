@@ -1,15 +1,38 @@
+const Helpers = require('helpers');
+
 export class Line {
     constructor(start, end) {
         this.start = start;
         this.end = end;
+        this.init();
     }
 
-    getLength() {
-        //this returns the square of the distance
-        // sqr((x2 - x1)^2 + (y2 - y1)^2)
+    init() {
+        this.length = this.calculateLength();
+        this.points = this.generatePoints();
+        this.slope = this.getSlope();
+    }
+
+    generatePoints() {
+        return {
+            [this.start.toString()]: this.start,
+            [this.end.toString()]: this.end
+        }
+    }
+
+    calculateLength() {
+        return Helpers.pointDistance(this.start, this.end);
+    }
+
+    getSlope() {
         let a = this.start;
         let b = this.end;
-        return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)
+        return (b.y - a.y) / (b.x - a.x) * 1.0
+    }
+
+    toString() {
+        // 2_1-3_2
+        return `${this.start.toString()}-${this.end.toString()}`
     }
 
     // getAngle() {
@@ -25,19 +48,23 @@ export class Line {
     //     // 0,0 and 1,-1 is -45
     // }
 
-    
-    getSlope() {
-        let a = this.start;
-        let b = this.end;
-        return (b.y - a.y) / (b.x - a.x) * 1.0
+    get points() {
+        return this.points
     }
+
+    get length() {
+        return this.length
+    }
+    
 
     set start(start) {
         this.start = start
+        this.length = this.calculateLength()
     }
 
     set end(end) {
         this.end = end
+        this.length = this.calculateLength()
     }
 
     get start() {

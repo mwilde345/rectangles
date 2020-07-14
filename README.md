@@ -53,10 +53,6 @@ https://nuvalence-development-exercises.s3.amazonaws.com/rectangles/Rectangles+P
 
 ## Line object
 
-## Edge Object
-
-## Node object
-* each node is a rectangle
 
 ## Result object
 * Return array of edge (relationship) objects

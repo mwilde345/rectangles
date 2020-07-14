@@ -4,6 +4,14 @@ export class Point {
         this.y = y;
     }
 
+    toString() {
+        return `${this.x}_${this.y}`
+    }
+
+    equals(p1) {
+        return this.x === p1.x && this.y === p1.y
+    }
+
     get x() {
         return this.x
     }
