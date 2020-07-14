@@ -84,6 +84,9 @@ class Main {
         let intersectingPoints = []
         r1lines.forEach(r1line => {
             r2lines.forEach(r2line => {
+                if (r1.toString()==='0_0-1_0-0_3-1_3' && r2.toString() === '0_0-0.5_0-0_2-0.5_2') {
+                    console.log(r1line, r2line)
+                }
                 let intersectionPoint = Helpers.getIntersectionPoint(r1line, r2line);
                 if (intersectionPoint) {
                     intersectingPoints.push(intersectionPoint)
