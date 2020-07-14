@@ -35,19 +35,6 @@ export class Line {
         return `${this.start.toString()}-${this.end.toString()}`
     }
 
-    // getAngle() {
-    //     let a = this.start;
-    //     let b = this.end;
-    //     //arctangent (stackoverflow)
-    //     var dy = a.y - b.y;
-    //     var dx = a.x - b.x;
-    //     var theta = Math.atan2(dy, dx);
-    //     theta *= 180 / Math.PI;
-    //     return theta;
-    //     // 0,0 and -1, 1 is 135
-    //     // 0,0 and 1,-1 is -45
-    // }
-
     get points() {
         return this.points
     }

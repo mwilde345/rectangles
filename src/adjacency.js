@@ -1,22 +1,31 @@
 export class Adjacency {
-    constructor(type, line) {
-        this.type = type;
-        this.line = line;
+    constructor() {
+        this.sub = []
+        this.proper = []
+        this.partial = []
     }
 
-    get type() {
-        return this.type
+    get sub() {
+        return this.sub
     }
 
-    get line() {
-        return this.line
+    get proper() {
+        return this.proper
     }
 
-    set type(type) {
-        this.type = type;
+    get partial() {
+        return this.partial
     }
 
-    set line(line) {
-        this.line = line
+    addSub(line) {
+        this.sub = this.sub.push(line)
+    }
+
+    addProper(line) {
+        this.proper = this.proper.push(line)
+    }
+
+    addPartial(line) {
+        this.partial = this.partial.push(line)
     }
 }

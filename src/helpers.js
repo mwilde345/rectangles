@@ -20,13 +20,15 @@ export class Helpers {
         return this.pointDistance(p1, p2) + this.pointDistance(p1, p3) == this.pointDistance(p2,p3)
     }
 
-    getIntersection(l1, l2) {
+    getIntersectionPoint(l1, l2) {
         // y = mx + b. set m1x + b1 = m2x + b2 to solve x intersection
         // plug x intersection into either function to get y intersection
         let y1int = l1.start.y - l1.slope * l1.start.x * 1.0
         let y2int = l2.start.y - l2.slope * l2.start.x * 1.0
         let xinter = (y2int - y1int) / (l1.slope - l2.slope)
         let yinter = (l1.slope * xinter) + y1int;
-        return new Point(xinter, yinter);
+        let intersection = new Point(xinter, yinter);
+        // if the intersection is not on one of the lines, return null;
+        return (!this.isPointOnLine(intersection, l1)) ? null : intersection
     }
 }    

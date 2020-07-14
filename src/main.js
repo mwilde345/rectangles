@@ -1,18 +1,19 @@
-import {Point} from './point'
-import {Line} from './line'
-import {Rectangle} from './rectangle'
-import {Helpers} from './helpers'
-import {Relationship} from './relationship'
-import {Result} from './result'
-import {Adjacency} from './adjacency'
-import {Containment} from './containment'
-import {Intersection} from './intersection'
+import { Point } from './point'
+import { Line } from './line'
+import { Rectangle } from './rectangle'
+import { Helpers } from './helpers'
+import { Relationship } from './relationship'
+import { Result } from './result'
+import { Adjacency } from './adjacency'
+import { Containment } from './containment'
+import { Intersection } from './intersection'
 
 class Main {
     constructor(input) {
         this.result = new Result();
         this.analyze(input)
     }
+    // O(N^2)
     analyze(input) {
         // first pass collects data about each rectangle
         let metadata = {}
@@ -28,7 +29,7 @@ class Main {
                 new Point(line[2][0], line[2][1]),
                 new Point(line[3][0], line[3][1])
             )
-            let {isRectangle, diagonal, halfPerimeter, area, points, lines, slopes} = rect;
+            let { isRectangle, diagonal, halfPerimeter, area, points, lines, slopes } = rect;
             if (!isRectangle) {
                 console.log(`line ${index} contains an invalid rectangle. Skipping`);
                 metadata[rect.toString] = {
@@ -39,88 +40,147 @@ class Main {
         })
         let rectArray = Object.values(metadata);
         // compare each rectangle against every other
-        for (let i = 0; i < rectArray.length - 1; i ++) {
+        for (let i = 0; i < rectArray.length - 1; i++) {
             let r1 = rectArray[i];
             if (!r1.isRectangle) {
                 console.log()
             }
             for (let j = i + 1; j < rectArray.length; j++) {
                 let r2 = rectArray[j];
-                if (r1.toString()===r2.toString()) {
+                if (r1.toString() === r2.toString()) {
                     console.log(`Found two identical rectangles at: ${r1.toString()}. Skipping.`);
                     continue;
                 }
                 let relationship = new Relationship();
-                
+
                 // start checking relationships
                 relationship.intersection = this.checkIntersection(r1, r2);
                 if (!relationship.intersection) {
+                    // r1 can't contain r2 if r2 intersects with r1 (crosses any line)
                     relationship.containment = this.checkContains(r1, r2);
                 }
-                relationship.adjacency = this.checkAdjacent(r1, r2)
+                // rule out parallel
+                let [slopes1, slopes2] = [r1.slopes, r2.slopes];
+                // if one line in r1 is not parallel with another line in r2, no adjacency can exist
+                if (slopes2.includes(slopes1[0])) {
+                    relationship.adjacency = this.checkAdjacent(r1, r2)
+                }
                 this.result[r1.toString()][r2.toString()] = relationship;
             }
         }
         return this.result;
     }
+    // O(16) 4x4 lines
+    // what are the intersecting points between the two rectangles?
+    checkIntersection(r1, r2) {
+        // bonus: intersectionMemo. Which lines of which rectangles have discovered intersections
+        //  if a line has 2 intersections, exclude it from further checks
+
+        // can be intersecting and adjacent
+        // one line can intersect no more than 2 times with another line
+        let r1lines = Object.values(r1.lines);
+        let r2lines = Object.values(r2.lines);
+        let intersectingPoints = []
+        r1lines.forEach(r1line => {
+            r2lines.forEach(r2line => {
+                let intersectionPoint = Helpers.getIntersectionPoint(r1line, r2line);
+                if (intersectionPoint) {
+                    intersectingPoints.push(intersectionPoint)
+                }
+            })
+        })
+        return intersectingPoints.length ? new Intersection(intersectingPoints) : null;
+
+    }
+    // O(4) only check one daig in r1 against all points in r2
+    // true if r1 contains r2 (false if rectangles are passed in opposite order)
+    checkContains(r1, r2) {
+        // can be adjacent and contained
+        // can't be intersecting and contained
+        // For every point 'p' on r2, ensure that ap + pc < ab + bc where a,b,c are top left, right, bottom right of r1
+        let { diagonal, halfPerimeter } = r1;
+        let [a, c] = diagonal.points;
+        let points = Object.values(r2.points);
+        return new Containment(
+            points.filter(p => {
+                Helpers.pointDistance(a, p) + Helpers.pointDistance(p, c) <= halfPerimeter
+            })
+                .length === 4
+        )
+    }
+
     // sub: A sub-line share is a share where one side of rectangle A is a line that 
     //      exists as a set of points wholly contained on some other side of rectangle B
     // partial: where some line segment on a side of rectangle A exists as a set of points on some side of Rectangle B
     // proper: 2 lines are the same
+
+    // store types of adjacency found
+    // options: proper/sub/sub, sub/sub, proper, sub, partial
+    // [{type: SUB, line: <Line>}]
+    //O(16) 4x4 lines.
     checkAdjacent(r1, r2) {
-        // rule out parallel
-        let r1lines = r1.lines; // [l1,l2,l3,l4]
-        let r2lines = r2.lines;
-        r1lines.forEach(line1 => {
-            r2lines.forEach(line2 => {
-                // same points? proper line. store it to relationship. need to stop r1 iteration and exclude r2 line from future iterations
-                // else check for parallel
-                // if parallel: is on line. AC + CB = AB
-                // is D on line AD + DB = AB
-                    // if yes then sub
-                    // else partial
-                // TODO: function to get AC and CB
-            })
-        })
-
-        // otherwise, it could be proper or sub adjacent
-        // if they share 2 points and are parallel then that line is proper.
-        // if they share more than 2 points, they are same rectangle
-        // so get 1 slope from r1, compare with at most 3 slopes from r2 and rule out if not parallel
-        // no point in comparing points on lines without same slope
-
-        //within function comparing lines between r1 and r2, if same slope, nested function to find points on theline
-        // is c online? AC + CB = AB
-        // is proper? we know from above already.
-        // 
-        
-        // store which lines are parallel to each other.
-        // {135: {r1: [l1, l3], r2: [l2, l4]}, 90: {r1: [l2, l4], r2: [l1, l3]}}
-        // go through parallel pairs and check if the lines are adjacent
-            // if the lines have a same point, it could be proper or sub 
-                // if one line is longer than the other, it's not proper, it's sub
-                // else proper
-            // otherwise it could be sub or partial
-                // check if C is on line A->B: return dist(A,C) + dist (C,B) === dist (A,B) 
-                // if C is on AB, it's sub if D ends before B (forget length) so if CB > CD 
-                // if C is on AB, it's partial if D extends beyond B (forget length) so if CB < CD 
-        // TODO: determine if we should compare D to A or B.... draw it out
-        // store the actual adjacent line segment, not the rectangle line segments
+        let adjacency = new Adjacency();
+        let r1lines = Object.values(r1.lines); // [l1,l2,l3,l4]
+        let r2lines = Object.values(r2.lines);
+        let relatedR2Lines = [];
+        for (i = 0; i < r1lines.length; i++){
+            let line1 = r1lines[i];
+            inner_loop:
+            for (j = 0; j < r2lines.length; j++) {
+                // don't worry about a line that's already been related
+                if (relatedR2Lines.includes(j)) continue;
+                let line2 = r2lines[j];
+                // don't worry about lines that aren't parallel
+                if (line1.slope !== line2.slope) continue;
+                // if the lines share points, they are proper
+                let uniquePoints = new Set(...Object.keys(line1.points), ...Object.keys(line2.points))
+                if (uniquePoints.size === 2) {
+                    // add proper line
+                    adjacency.addProper(line1)
+                    relatedR2Lines.push(j);
+                    break inner_loop
+                }
+                let [a,b] = Object.values(line1.points);
+                let [c,d] = Object.values(line2.points);
+                let isAonLine = Helpers.isPointOnLine(a, line2);
+                let isBonLine = Helpers.isPointOnLine(b, line2);
+                // check the other way around
+                let isConLine = Helpers.isPointOnLine(c, line1);
+                let isDonLine = Helpers.isPointOnLine(d, line1);
+                // check if one of the points are on the other line
+                if (isAonLine || isBonLine || isConLine || isDonLine) {
+                    if (isConLine && isDonLine){
+                        // cd is a sub line of ab
+                        adjacency.addSub(line2);
+                        relatedR2Lines.push(j)
+                        break inner_loop
+                    } 
+                    if (isAonLine && isBonLine) {
+                        // ab is a sub line of cd
+                        adjacency.addSub(line1)
+                        relatedR2Lines.push(j)
+                        break inner_loop
+                    }
+                    // at this point we know it's not proper, and it's not sub, and at least one of the points are on 
+                    //  the other line, so it must be partial. need to find which line is partial. for a partial case,
+                    //  A or B will be for sure present on CD. Must choose which point of CD is also present on AB
+                    if (isAonLine) {
+                        let dORc = isDonLine ? d : c;
+                        adjacency.addPartial(new Line(dORc, a));
+                        relatedR2Lines.push(j);
+                        break inner_loop
+                    } else if (isBonLine) {
+                        let dORc = isDonLine ? d : c;
+                        adjacency.addPartial(newLine(dORc, b))
+                        relatedR2Lines.push(j);
+                        break inner_loop
+                    }
+                } else {
+                    // no line is on another, so these lines do not touch. next line
+                    continue;
+                }
+            }
+        }
     }
-
-    checkIntersection(r1, r2) {
-        // can be intersecting and adjacent
-        // no more than 8 intersecting points
-        // one line can intersect no more than 2 times with another line
-        //  after finding 2 intersections for a line, stop with that line - intersectionCache
-
-    }
-
-    checkContains(r1, r2) {
-        // can be adjacent and contained
-        // can't be intersecting and contained
-    }
-
-    
 }
 new Main(input);
