@@ -116,8 +116,7 @@ class Main {
 
     // store types of adjacency found
     // options: proper/sub/sub, sub/sub, proper, sub, partial
-    // [{type: SUB, line: <Line>}]
-    //O(16) 4x4 lines.
+    //O(n*2) 4x2 lines. compare each line with its parallel counterparts
     checkAdjacent(r1, r2) {
         let adjacency = new Adjacency();
         let r1lines = Object.values(r1.lines); // [l1,l2,l3,l4]
@@ -181,6 +180,7 @@ class Main {
                 }
             }
         }
+        return adjacency;
     }
 }
 new Main(input);
