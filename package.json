@@ -1,0 +1,25 @@
+{
+  "name": "rectangles",
+  "version": "1.0.0",
+  "description": "https://nuvalence-development-exercises.s3.amazonaws.com/rectangles/Rectangles+Programming+Sample.pdf",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mwilde345/rectangles.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mwilde345/rectangles/issues"
+  },
+  "homepage": "https://github.com/mwilde345/rectangles#readme",
+  "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/register": "^7.10.4"
+  },
+  "type": "module"
+}

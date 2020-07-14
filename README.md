@@ -1,6 +1,12 @@
 # rectangles
 
-https://nuvalence-development-exercises.s3.amazonaws.com/rectangles/Rectangles+Programming+Sample.pdf
+
+# Running:
+* `npm install`
+* `node --experimental-modules src/main.mjs`
+* Input is at the end of `main.js`
+* JSON output will be printed to the terminal
+
 
 ## Input
 * picture
